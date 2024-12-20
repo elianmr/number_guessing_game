@@ -1,7 +1,8 @@
 #!/bin/bash
 PSQL="psql --username=freecodecamp --dbname=postgres -t --no-align -c"
 
-SECRET_NUMBER=$(shuf -i 1-1000 -n 1)
+# SECRET_NUMBER=$(shuf -i 1-1000 -n 1)
+SECRET_NUMBER=$(( RANDOM % 1000 + 1 ))
 
 echo -e "\nEnter your username:"
 read USERNAME_INPUT
@@ -9,28 +10,27 @@ read USERNAME_INPUT
 USERNAME=$($PSQL "SELECT username,games_played,best_game FROM users")
 
 GUESS_NUMBER(){
-  echo -e "\nGuess the secret number between 1 and 1000:"
   
-  NUMBER_ENTERED=0
+  echo -e "\nGuess the secret number between 1 and 1000:"
+   
   NUMBER_OF_GUESSES=0
   
-  while (( $NUMBER_ENTERED != SECRET_NUMBER ))
+  while [[ $NUMBER_ENTERED = $SECRET_NUMBER ]]
   do
-    
-    read NUMBER_ENTERED
-    
-    if [[ $NUMBER_ENTERED =~ ^[0-9+]$ ]]
+        
+   if [[ $NUMBER_ENTERED =~ ^[0-9+]$ ]]
     then
-      echo -e "\nThat is not an integer, guess again:"
+     echo -e "\nThat is not an integer, guess again:"
     else
-      NUMBER_OF_GUESSES=$((NUMBER_OF_GUESSES + 1))
-      if [[ $NUMBER_ENTERED > $SECRET_NUMBER ]]
-      then
-        echo -e "\nIt's lower than that, guess again:"
+     NUMBER_OF_GUESSES=$((NUMBER_OF_GUESSES + 1))
+     if [[ $NUMBER_ENTERED > $SECRET_NUMBER ]]
+     then
+       echo -e "\nIt's lower than that, guess again:"
       else [[ $NUMBER_ENTERED < $SECRET_NUMBER ]]
         echo -e "\nIt's higher than that, guess again:"
       fi
     fi
+
   done
 
   echo -e "\nYou guessed it in $NUMBER_OF_GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!"
