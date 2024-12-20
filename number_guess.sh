@@ -8,24 +8,6 @@ read USERNAME_INPUT
 
 USERNAME=$($PSQL "SELECT username,games_played,best_game FROM users")
 
-if [[ -z $USERNAME ]]
-then
-  USERNAME=$USERNAME_INPUT
-  echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
-  
-  INSERT=$($PSQL "INSERT INTO users(username,games_played,best_game) VALUES('$USERNAME',0,0)") # MOVE TO THE END
-  echo $INSERT
- 
-  GUESS_NUMBER
-
-else
-  echo $USERNAME | while IFS='|' read USERNAME GAMES_PLAYED BESTGAME
-  do
-    echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BESTGAME guesses."
-    GUESS_NUMBER
-  done
-fi
-
 GUESS_NUMBER(){
   echo -e "\nGuess the secret number between 1 and 1000:"
   
@@ -42,21 +24,18 @@ GUESS_NUMBER(){
       echo -e "\nThat is not an integer, guess again:"
     else
       NUMBER_OF_GUESSES=$((NUMBER_OF_GUESSES + 1))
-
       if [[ $NUMBER_ENTERED > $SECRET_NUMBER ]]
       then
         echo -e "\nIt's lower than that, guess again:"
-      elif [[ $NUMBER_ENTERED < $SECRET_NUMBER ]]
+      else [[ $NUMBER_ENTERED < $SECRET_NUMBER ]]
         echo -e "\nIt's higher than that, guess again:"
-      else
-        break
       fi
     fi
   done
 
   echo -e "\nYou guessed it in $NUMBER_OF_GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!"
   
-  $GAMES_UPDATED=$((GAMES_PLAYED + 1))
+  GAMES_UPDATED=$((GAMES_PLAYED + 1))
 
   # fewest number of guesses it took that user to win the game
   if [[ $NUMBER_OF_GUESSES < $BESTGAME ]]
@@ -67,3 +46,23 @@ GUESS_NUMBER(){
   fi
 
 }
+
+if [[ -z $USERNAME ]]
+then
+
+  USERNAME=$USERNAME_INPUT
+  echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
+  
+  INSERT=$($PSQL "INSERT INTO users(username,games_played,best_game) VALUES('$USERNAME',0,0)") # MOVE TO THE END
+  echo $INSERT
+ 
+  GUESS_NUMBER
+
+else
+  echo $USERNAME | while IFS='|' read USERNAME GAMES_PLAYED BESTGAME
+  do
+    echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BESTGAME guesses."
+    GUESS_NUMBER
+  done
+fi
+
