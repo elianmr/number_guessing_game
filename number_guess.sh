@@ -41,7 +41,8 @@ GUESS_NUMBER(){
     then
       echo -e "\nThat is not an integer, guess again:"
     else
-      # NUMBER_OF_GUESSES=($NUMBER_OF_GUESSES + 1)
+      NUMBER_OF_GUESSES=$((NUMBER_OF_GUESSES + 1))
+
       if [[ $NUMBER_ENTERED > $SECRET_NUMBER ]]
       then
         echo -e "\nIt's lower than that, guess again:"
@@ -55,7 +56,7 @@ GUESS_NUMBER(){
 
   echo -e "\nYou guessed it in $NUMBER_OF_GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!"
   
-  # GAMES_PLAYED +1
+  $GAMES_UPDATED=$((GAMES_PLAYED + 1))
 
   # fewest number of guesses it took that user to win the game
   if [[ $NUMBER_OF_GUESSES < $BESTGAME ]]
