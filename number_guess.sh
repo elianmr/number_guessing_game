@@ -15,7 +15,7 @@ GUESS_NUMBER(){
   while [[ $NUMBER_ENTERED != $SECRET_NUMBER ]]
   do
         
-   if [[ $NUMBER_ENTERED =~ ^[0-9+]$ ]]
+   if [[ ! $NUMBER_ENTERED =~ ^[0-9+]$ ]]
     then
      echo -e "\nThat is not an integer, guess again:"
     else
