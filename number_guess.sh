@@ -15,9 +15,11 @@ GUESS_NUMBER(){
   while [[ $NUMBER_ENTERED != $SECRET_NUMBER ]]
   do
         
-   if [[ ! $NUMBER_ENTERED =~ ^[0-9+]$ ]]
+   if [[ ! $NUMBER_ENTERED =~ ^[0-9]+$ ]]
     then
      echo -e "\nThat is not an integer, guess again:"
+     sleep 1
+     read NUMBER_ENTERED
     else
      NUMBER_OF_GUESSES=$((NUMBER_OF_GUESSES + 1))
      if [[ $NUMBER_ENTERED > $SECRET_NUMBER ]]
@@ -37,7 +39,7 @@ GUESS_NUMBER(){
   GAMES_UPDATED=$((GAMES_PLAYED + 1))
 
   # fewest number of guesses it took that user to win the game
-  if [[ $NUMBER_OF_GUESSES < $BESTGAME ]]
+  if [[ $NUMBER_OF_GUESSES < $BESTGAME || -z $BESTGAME ]]
   then 
     UPDATE=$($PSQL "UPDATE users SET games_played = $GAMES_UPDATED, best_game = $NUMBER_OF_GUESSES WHERE username = '$USERNAME'")
   else
@@ -57,14 +59,15 @@ then
   USERNAME=$USERNAME_INPUT
   echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
   
-  INSERT=$($PSQL "INSERT INTO users(username,games_played,best_game) VALUES('$USERNAME',0,0)") # MOVE TO THE END
- 
+  INSERT=$($PSQL "INSERT INTO users(username,games_played,best_game) VALUES('$USERNAME',0,NULL)") # MOVE TO THE END
+  sleep 2
   GUESS_NUMBER
 
 else
   echo $USERNAME | while IFS='|' read USERNAME GAMES_PLAYED BESTGAME
   do
     echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BESTGAME guesses."
+    sleep 5
     GUESS_NUMBER
   done
 fi
