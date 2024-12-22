@@ -4,10 +4,7 @@ PSQL="psql --username=freecodecamp --dbname=postgres -t --no-align -c"
 # SECRET_NUMBER=$(shuf -i 1-1000 -n 1)
 SECRET_NUMBER=$(( RANDOM % 1000 + 1 ))
 
-echo -e "\nEnter your username:"
-read USERNAME_INPUT
 
-USERNAME=$($PSQL "SELECT username,games_played,best_game FROM users")
 
 GUESS_NUMBER(){
   
@@ -47,6 +44,11 @@ GUESS_NUMBER(){
 
 }
 
+echo -e "\nEnter your username:"
+read USERNAME_INPUT
+
+USERNAME=$($PSQL "SELECT username,games_played,best_game FROM users WHERE username = '$USERNAME_INPUT'")
+
 if [[ -z $USERNAME ]]
 then
 
@@ -54,7 +56,6 @@ then
   echo -e "\nWelcome, $USERNAME! It looks like this is your first time here."
   
   INSERT=$($PSQL "INSERT INTO users(username,games_played,best_game) VALUES('$USERNAME',0,0)") # MOVE TO THE END
-  echo $INSERT
  
   GUESS_NUMBER
 
